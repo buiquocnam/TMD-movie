@@ -9,29 +9,24 @@ export type DeleteUserDTO = {
   userId: string;
 };
 
-export const deleteUser = ({ userId }: DeleteUserDTO) => {
-  return api.delete(`/users/${userId}`);
-};
+export const deleteUser = ({ userId }: DeleteUserDTO) =>
+  api.delete(`/users/${userId}`);
 
 type UseDeleteUserOptions = {
   mutationConfig?: MutationConfig<typeof deleteUser>;
 };
 
-export const useDeleteUser = ({
-  mutationConfig,
-}: UseDeleteUserOptions = {}) => {
+export const useDeleteUser = ({ mutationConfig }: UseDeleteUserOptions = {}) => {
   const queryClient = useQueryClient();
 
-  const { onSuccess, ...restConfig } = mutationConfig || {};
-
   return useMutation({
+    mutationFn: deleteUser,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
         queryKey: getUsersQueryOptions().queryKey,
       });
-      onSuccess?.(...args);
+      mutationConfig?.onSuccess?.(...args);
     },
-    ...restConfig,
-    mutationFn: deleteUser,
+    ...mutationConfig,
   });
 };

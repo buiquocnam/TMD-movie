@@ -49,3 +49,55 @@ export type Comment = Entity<{
   discussionId: string;
   author: User;
 }>;
+
+// TMDB API Types
+export interface TMDBRequestTokenResponse {
+  success: boolean;
+  request_token: string;
+  expires_at: string;
+}
+
+export interface TMDBValidateTokenResponse {
+  success: boolean;
+  request_token: string;
+}
+
+export interface TMDBSessionResponse {
+  success: boolean;
+  session_id: string;
+}
+
+export interface TMDBAccountDetails {
+  id: number;
+  username: string;
+  name: string;
+  include_adult: boolean;
+  iso_639_1: string;
+  iso_3166_1: string;
+  avatar: {
+    gravatar: {
+      hash: string;
+    };
+    tmdb: {
+      avatar_path: string | null;
+    };
+  };
+}
+
+export interface TMDBAuthResponse {
+  sessionId: string;
+  accountDetails: TMDBAccountDetails;
+}
+
+export interface TMDBLoginInput {
+  username: string;
+  password: string;
+}
+
+// TMDB Error class
+export class TMDBError extends Error {
+  constructor(message: string, public status?: number) {
+    super(message);
+    this.name = 'TMDBError';
+  }
+}

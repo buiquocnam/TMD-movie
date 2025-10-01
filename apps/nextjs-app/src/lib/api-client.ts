@@ -8,7 +8,8 @@ type RequestOptions = {
   cookie?: string;
   params?: Record<string, string | number | boolean | undefined | null>;
   cache?: RequestCache;
-  next?: NextFetchRequestConfig;
+  next?: any;
+  credentials?: RequestCredentials;
 };
 
 function buildUrlWithParams(
@@ -27,6 +28,7 @@ function buildUrlWithParams(
   ).toString();
   return `${url}?${queryString}`;
 }
+
 
 // Create a separate function for getting server-side cookies that can be imported where needed
 export function getServerCookies() {
@@ -59,6 +61,7 @@ async function fetchApi<T>(
     params,
     cache = 'no-store',
     next,
+    credentials = 'omit',
   } = options;
 
   // Get cookies from the request when running on server
@@ -67,7 +70,13 @@ async function fetchApi<T>(
     cookieHeader = await getServerCookies();
   }
 
-  const fullUrl = buildUrlWithParams(`${env.API_URL}${url}`, params);
+  // Use local API routes for TMDB endpoints, external API for others
+  const baseUrl = url.startsWith('/tmdb/') ? '/api' : env.API_URL;
+  const fullUrl = buildUrlWithParams(`${baseUrl}${url}`, params);
+  const TMDB_ACCESS_TOKEN = process.env.NEXT_PUBLIC_TMDB_READ_ACCESS_KEY;
+
+  // Auto-add TMDB access token for direct TMDB API requests (not server-side routes)
+  const shouldAddToken = !url.startsWith('/tmdb/') && TMDB_ACCESS_TOKEN;
 
   const response = await fetch(fullUrl, {
     method,
@@ -76,9 +85,10 @@ async function fetchApi<T>(
       Accept: 'application/json',
       ...headers,
       ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+      ...(shouldAddToken ? { Authorization: `Bearer ${TMDB_ACCESS_TOKEN}` } : {}),
     },
     body: body ? JSON.stringify(body) : undefined,
-    credentials: 'include',
+    credentials,
     cache,
     next,
   });

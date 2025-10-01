@@ -26,7 +26,7 @@ export const AuthLayout = ({ children }: LayoutProps) => {
   useEffect(() => {
     if (user.data) {
       router.replace(
-        `${redirectTo ? `${decodeURIComponent(redirectTo)}` : paths.app.dashboard.getHref()}`,
+        `${redirectTo ? `${decodeURIComponent(redirectTo)}` : paths.app.root.getHref()}`,
       );
     }
   }, [user.data, router, redirectTo]);

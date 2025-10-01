@@ -45,7 +45,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   });
   const navigation = [
     { name: 'Dashboard', to: paths.app.root.getHref(), icon: Home },
-    { name: 'Discussions', to: paths.app.discussions.getHref(), icon: Folder },
+    { name: 'Discussions', to: paths.public.discussions.getHref(), icon: Folder },
     user.data?.role === 'ADMIN' && {
       name: 'Users',
       to: paths.app.users.getHref(),
@@ -59,7 +59,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <nav className="flex flex-col items-center gap-4 px-2 py-4">
           <div className="flex h-16 shrink-0 items-center px-4">
             <Logo />
-          </div>
+          </div> 
           {navigation.map((item) => {
             const isActive = pathname === item.to;
             return (

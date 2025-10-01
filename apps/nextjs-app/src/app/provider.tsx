@@ -27,7 +27,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         {process.env.DEV && <ReactQueryDevtools />}
         <Notifications />
         {children}
-      </QueryClientProvider>
+      </QueryClientProvider> 
     </ErrorBoundary>
   );
 };
