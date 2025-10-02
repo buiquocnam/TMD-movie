@@ -1,3 +1,5 @@
+import { profile } from "console";
+
 export const paths = {
   home: {
     getHref: () => '/',
@@ -14,16 +16,12 @@ export const paths = {
     },
   },
 
-  app: {
-    root: {
-      getHref: () => '/app',
-    },
-    users: {
-      getHref: () => '/app/users',
-    },
+  user: {
     profile: {
-      getHref: () => '/app/profile',
+      getHref: () => '/profile',
     },
+    
+  
   },
   public: {
     discussions: {

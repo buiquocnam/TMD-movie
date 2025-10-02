@@ -63,7 +63,7 @@ export const Header = () => {
             {/* User Menu */}
             {user.data ? (
               <div className="flex items-center space-x-2">
-                <Link href={paths.app.profile.getHref()}>
+                <Link href={paths.user.profile.getHref()}>
                   <Button
                     variant="outline"
                     size="sm"
@@ -73,14 +73,7 @@ export const Header = () => {
                     Hồ Sơ
                   </Button>
                 </Link>
-                <Link href={paths.app.root.getHref()}>
-                  <Button
-                    size="sm"
-                    className="rounded-full bg-indigo-600 hover:bg-indigo-700 text-white transition"
-                  >
-                    Bảng Điều Khiển
-                  </Button>
-                </Link>
+               
                 <Button
                   variant="ghost"
                   size="sm"

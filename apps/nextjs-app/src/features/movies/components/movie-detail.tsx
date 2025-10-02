@@ -9,7 +9,8 @@ import { Card } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/utils/cn';
 import { getTmdbImageUrl } from '@/utils/image';
-import { useMovieDetails, useMovieCredits, useMovieVideos } from '@/features/movies/api/get-movie-details';
+import { useMovieDetails, useMovieCredits } from '@/features/movies/api/get-movie-details';
+import { TrailerModal } from '@/features/movies/components/trailer-modal';
 import { ReviewsSection } from '@/features/review/components';
 
 interface MovieDetailProps {
@@ -19,7 +20,8 @@ interface MovieDetailProps {
 export const MovieDetail = ({ movieId }: MovieDetailProps) => {
   const { data: movie, isLoading: movieLoading, error: movieError, isFetching: movieFetching } = useMovieDetails(movieId);
   const { data: credits, isLoading: creditsLoading, isFetching: creditsFetching } = useMovieCredits(movieId);
-  const { data: videos, isFetching: videosFetching } = useMovieVideos(movieId);
+  
+  const [isTrailerModalOpen, setIsTrailerModalOpen] = React.useState(false);
 
   // Show loading only if no data exists (initial load)
   if (movieLoading && !movie) {
@@ -40,10 +42,6 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
       </div>
     );
   }
-
-  const trailer = videos?.results.find(video => 
-    video.type === 'Trailer' && video.site === 'YouTube'
-  );
 
   const director = credits?.crew.find(person => person.job === 'Director');
   const mainCast = credits?.cast.slice(0, 8) || [];
@@ -158,15 +156,14 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
 
                 {/* Action Buttons */}
                 <div className="flex flex-wrap gap-3">
-                  {trailer && (
-                    <Button
-                      size="lg"
-                      className="bg-red-600 hover:bg-red-700 text-white shadow-lg"
-                    >
-                      <Play className="w-5 h-5 mr-2" />
-                      Watch Trailer
-                    </Button>
-                  )}
+                  <Button
+                    size="lg"
+                    className="bg-red-600 hover:bg-red-700 text-white shadow-lg"
+                    onClick={() => setIsTrailerModalOpen(true)}
+                  >
+                    <Play className="w-5 h-5 mr-2" />
+                    Watch Trailer
+                  </Button>
                   <Button
                     size="lg"
                     variant="outline"
@@ -228,7 +225,7 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
                           />
                         )}
                       </div>
-                      <p className="font-semibold text-sm text-gray-900">{actor.name}</p>
+                      <p className=" text-sm text-gray-900">{actor.name}</p>
                       <p className="text-xs text-gray-600">{actor.character}</p>
                     </div>
                   ))}
@@ -242,14 +239,14 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {director && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Director</h3>
+                    <h3 className=" text-gray-900 mb-1">Director</h3>
                     <p className="text-gray-600">{director.name}</p>
                   </div>
                 )}
                 
                 {movie.production_companies.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Production Companies</h3>
+                    <h3 className=" text-gray-900 mb-1">Production Companies</h3>
                     <p className="text-gray-600">
                       {movie.production_companies.map(company => company.name).join(', ')}
                     </p>
@@ -258,7 +255,7 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
 
                 {movie.production_countries.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Countries</h3>
+                    <h3 className=" text-gray-900 mb-1">Countries</h3>
                     <p className="text-gray-600">
                       {movie.production_countries.map(country => country.name).join(', ')}
                     </p>
@@ -266,7 +263,7 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
                 )}
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Original Language</h3>
+                  <h3 className=" text-gray-900 mb-1">Original Language</h3>
                   <p className="text-gray-600 uppercase">{movie.original_language}</p>
                 </div>
               </div>
@@ -280,12 +277,12 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
               <h2 className="text-xl font-bold text-gray-900 mb-4">Movie Details</h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Status</h3>
+                  <h3 className=" text-gray-900 mb-1">Status</h3>
                   <p className="text-gray-600">{movie.status}</p>
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Release Date</h3>
+                  <h3 className=" text-gray-900 mb-1">Release Date</h3>
                   <p className="text-gray-600">
                     {new Date(movie.release_date).toLocaleDateString('en-US', {
                       year: 'numeric',
@@ -296,13 +293,13 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Runtime</h3>
+                  <h3 className=" text-gray-900 mb-1">Runtime</h3>
                   <p className="text-gray-600">{formatRuntime(movie.runtime)}</p>
                 </div>
 
                 {movie.budget > 0 && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Budget</h3>
+                    <h3 className=" text-gray-900 mb-1">Budget</h3>
                     <p className="text-gray-600 flex items-center">
                       {formatCurrency(movie.budget)}
                     </p>
@@ -311,7 +308,7 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
 
                 {movie.revenue > 0 && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Revenue</h3>
+                    <h3 className=" text-gray-900 mb-1">Revenue</h3>
                     <p className="text-gray-600 flex items-center">
                       {formatCurrency(movie.revenue)}
                     </p>
@@ -319,13 +316,13 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
                 )}
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Popularity</h3>
+                  <h3 className=" text-gray-900 mb-1">Popularity</h3>
                   <p className="text-gray-600">{movie.popularity.toFixed(1)}</p>
                 </div>
 
                 {movie.homepage && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Homepage</h3>
+                    <h3 className=" text-gray-900 mb-1">Homepage</h3>
                     <a
                       href={movie.homepage}
                       target="_blank"
@@ -339,7 +336,7 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
 
                 {movie.imdb_id && (
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">IMDb</h3>
+                    <h3 className=" text-gray-900 mb-1">IMDb</h3>
                     <a
                       href={`https://www.imdb.com/title/${movie.imdb_id}`}
                       target="_blank"
@@ -362,6 +359,14 @@ export const MovieDetail = ({ movieId }: MovieDetailProps) => {
           <ReviewsSection movieId={movieId} />
         </Card>
       </div>
+
+      {/* Trailer Modal */}
+      <TrailerModal
+        isOpen={isTrailerModalOpen}
+        onClose={() => setIsTrailerModalOpen(false)}
+        movieId={movieId}
+        movieTitle={movie.title}
+      />
     </div>
   );
 };
